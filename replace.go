@@ -11,34 +11,42 @@ import (
     "bufio"
     "os"
     "regexp"
+    "strings"
 )
 
 var TargetFile string
+var NewFilePath string
 var Pattern string
 var PatternToReplace string
-var Writer string
+var CurrentLine, NewLine string
 
 func main() {
     fmt.Scan(&TargetFile, &Pattern, &PatternToReplace)
-    //fmt.Println(TargetFile, Pattern, PatternToReplace)
-
     inFile, _ := os.Open(TargetFile)
     defer inFile.Close()
     scanner := bufio.NewScanner(inFile)
         scanner.Split(bufio.ScanLines) 
     
-    i := 1 
+    // new file creating
+    NewFilePath := fmt.Sprintf(TargetFile + ".new")
+    var NewFile, Err = os.Create(NewFilePath)
+    _ = NewFile
+    _ = Err
+
     for scanner.Scan() {
-        // fmt.Println(scanner.Text())
+        CurrentLine := scanner.Text()
         matched, _ := regexp.MatchString(Pattern, scanner.Text()) 
         if matched {
-            // to newFile
-            fmt.Println("OK")
+            NewLine := strings.Replace(CurrentLine, Pattern, PatternToReplace, -1)
+            file, Err := os.OpenFile(NewFilePath, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+            _ = Err
+            defer file.Close()
+            _, Err = file.WriteString(NewLine + "\n")
         } else {
-            //scanner.Text() -> to newFile
-            fmt.Println("Not OK")
+            file, Err := os.OpenFile(NewFilePath, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+            _ = Err
+            defer file.Close()
+            _, Err = file.WriteString(CurrentLine + "\n")
         }
-        fmt.Println(i)
-        i++
     }
 }
