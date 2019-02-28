@@ -14,11 +14,7 @@ import (
     "strings"
 )
 
-var TargetFile string
-var NewFilePath string
-var Pattern string
-var PatternToReplace string
-var CurrentLine, NewLine string
+var TargetFile, NewFilePath, Pattern, PatternToReplace, CurrentLine, NewLine string
 
 func main() {
     fmt.Scan(&TargetFile, &Pattern, &PatternToReplace)
